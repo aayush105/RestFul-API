@@ -10,7 +10,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27107/wikiDB");
+var db = mongoose.connect('mongodb://localhost:27017/wikiDB');
 
 const articleSchema = {
     title : String,
@@ -18,6 +18,18 @@ const articleSchema = {
 };
 
 const Article = mongoose.model("Article", articleSchema);
+
+
+app.get("/articles", async function(req, res) {
+    try {
+      const foundArticles = await Article.find();
+      console.log(foundArticles);
+      res.send(foundArticles); // Send the foundArticles as the response
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Internal Server Error"); // Handle the error and send an appropriate response
+    }
+  });
 
 app.listen(3000, function(){
     console.log("Server started on port 3000");
